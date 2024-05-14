@@ -346,14 +346,18 @@ class Server extends eventemitter3_1.EventEmitter {
     close() {
         return new Promise((resolve, reject) => {
             try {
-                this.wss.close();
-                this.emit("close");
-                resolve();
+                this.wss.close((error) => {
+                   if(error) {
+                       reject(error);
+                       return;
+                   }
+                   resolve();
+                });
             }
             catch (error) {
                 reject(error);
             }
-        });
+        }).then(() => this.emit("close"));
     }
     /**
      * Handles all WebSocket JSON RPC 2.0 requests.
